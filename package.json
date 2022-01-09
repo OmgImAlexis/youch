@@ -2,30 +2,36 @@
   "name": "youch",
   "version": "3.0.0",
   "description": "HTML Pretty error stack viewer",
-  "main": "src/Youch.js",
+  "main": "./dist/youch.js",
+  "type": "module",
   "files": [
-    "src",
-    "index.d.ts"
+    "dist"
   ],
-  "types": "./index.d.ts",
-  "directories": {
-    "example": "examples"
-  },
+  "types": "./dist/index.d.ts",
   "scripts": {
     "pretest": "npm run lint",
-    "prepublishOnly": "npm run build",
-    "build": "node bin/compile.js",
+    "prepare": "npm run build",
+    "build": "tsup ./src/youch.ts --dts --clean --format esm && node ./.scripts/bundle-assets.js",
     "test": "npm run build && node test/youch.spec.js",
     "lint": "standard"
   },
   "author": "amanvirk",
   "license": "MIT",
   "devDependencies": {
+    "@types/cookie": "^0.4.1",
+    "@types/express": "^4.17.13",
+    "@types/mustache": "^4.1.2",
+    "@types/supertest": "^2.0.11",
+    "@types/uglify-js": "^3.13.1",
     "concat": "^1.0.3",
     "cz-conventional-changelog": "^3.3.0",
     "japa": "^4.0.0",
+    "mustache": "^4.2.0",
     "standard": "^16.0.4",
     "supertest": "^6.1.6",
+    "tsup": "^5.11.11",
+    "typescript": "^4.5.4",
+    "typesync": "^0.8.0",
     "uglify-js": "^3.14.5"
   },
   "config": {
@@ -35,7 +41,6 @@
   },
   "dependencies": {
     "cookie": "^0.4.1",
-    "mustache": "^4.2.0",
     "stacktracey": "^2.1.7"
   },
   "repository": {

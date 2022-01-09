@@ -22,7 +22,8 @@ window.Zepto(function ($) {
   function showFrameContext (frame) {
     var $frameContext = $(frame).find('.frame-context')
     var $context = $frameContext.html()
-    $context = $context.trim().length === 0 ? 'Missing stack frames' : $context
+    var $isApp = $frameContext.attr('data-is-app') === 'true'
+    $context = $context.trim().length === 0 ? ($isApp ? 'Missing stack frames' : 'Builtin module') : $context
 
     var $line = $frameContext.attr('data-line')
     var $start = $frameContext.attr('data-start')
@@ -51,4 +52,5 @@ window.Zepto(function ($) {
 
   displayFirstView()
   showFrameContext($('.frame-row.active')[0])
+  filterFrames()
 })

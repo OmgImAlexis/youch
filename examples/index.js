@@ -1,45 +1,46 @@
-'use strict'
-
-const http = require('http')
-const Youch = require('../src/Youch')
+import { createServer } from 'http';
+import { Youch } from '../dist/youch.js';
 
 class HttpException extends Error {
-  constructor (...args) {
-    super(...args)
-    this.name = this.constructor.name
+  constructor (message, status) {
+    super(message);
+    this.status = status;
+    this.name = this.constructor.name;
   }
 }
 
-function foo () {
-  const error = new HttpException('Some weird error')
-  error.status = 503
-  throw error
-}
+const foo = () => {
+  throw new HttpException('Some weird error', 503);
+};
 
-http.createServer((req, res) => {
-  let youch = null
+const renderErrorPage = async (error, request, response) => {
   try {
-    foo()
-  } catch (e) {
-    youch = new Youch(e, req)
-  }
+    const youch = new Youch(error, request);
+    const html = await youch
+      .addLink(({ message }) => {
+        const url = `https://stackoverflow.com/search?q=${encodeURIComponent(`[adonis.js] ${message}`)}`
+        return `<a href="${url}" target="_blank" title="Search on stackoverflow"><i class="fab fa-stack-overflow"></i>
+        </a>`
+      })
+      .toHTML();
 
-  youch
-    .addLink(({ message }) => {
-      const url = `https://stackoverflow.com/search?q=${encodeURIComponent(`[adonis.js] ${message}`)}`
-      return `<a href="${url}" target="_blank" title="Search on stackoverflow"><i class="fab fa-stack-overflow"></i>
-      </a>`
-    })
-    .toHTML()
-    .then((response) => {
-      res.writeHead(200, { 'content-type': 'text/html' })
-      res.write(response)
-      res.end()
-    }).catch((error) => {
-      res.writeHead(500)
-      res.write(error.message)
-      res.end()
-    })
+    response.writeHead(200, { 'content-type': 'text/html' })
+    response.write(html)
+    response.end();
+  } catch (error) { 
+    response.writeHead(500);
+    console.log(error);
+    response.write(error);
+    response.end();
+  }
+};
+
+createServer((request, response) => {
+  try {
+    foo();
+  } catch (error) {
+    renderErrorPage(error, request, response);
+  }
 }).listen(8000, () => {
   console.log('listening to port 8000')
-})
+});

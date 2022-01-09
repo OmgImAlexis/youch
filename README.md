@@ -4,8 +4,8 @@
 <br />
 
 <p>
-  <a href="youch.jpeg">
-    <img src="youch.jpeg" />
+  <a href="./.github/assets/youch.jpeg">
+    <img src="./.github/assets/youch.jpeg" />
   </a>
 </p>
 
